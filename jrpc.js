@@ -19,7 +19,8 @@ process.env.GRPC_SSL_CIPHER_SUITES = 'HIGH+ECDSA';
 const tlsCert = fs.readFileSync(TLS_PATH);
 const sslCreds = grpc.credentials.createSsl(tlsCert);
 const macaroon = fs.readFileSync(MACAROON_PATH).toString('hex');
-const macaroonCreds = grpc.credentials.createFromMetadataGenerator(function(args, callback) {
+console.log("macaroon: ", macaroon)
+const macaroonCreds = grpc.credentials.createFromMetadataGenerator(function (args, callback) {
     let metadata = new grpc.Metadata();
     metadata.add('macaroon', macaroon);
     callback(null, metadata);
@@ -27,7 +28,7 @@ const macaroonCreds = grpc.credentials.createFromMetadataGenerator(function(args
 let creds = grpc.credentials.combineChannelCredentials(sslCreds, macaroonCreds);
 let client = new lnrpc.Lightning(GRPC_HOST, creds);
 let request = {};
-client.getInfo(request, function(err, response) {
+client.getInfo(request, function (err, response) {
     console.log(response);
 });
 // Console output:
